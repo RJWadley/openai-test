@@ -1,47 +1,73 @@
 import { App } from "@slack/bolt";
 import dotenv from "dotenv";
-import fs from "fs";
-import { checkPulls } from "./checkPulls";
 
 dotenv.config();
+import { Configuration, OpenAIApi } from "openai";
 
-let SLACK_SIGNING_SECRET: string = process.env.SLACK_SIGNING_SECRET as string;
-let SLACK_BOT_TOKEN: string = process.env.SLACK_BOT_TOKEN as string;
-let GITHUB_TOKEN: string = process.env.GITHUB_TOKEN as string;
-let SLACK_CHANNEL_ID: string = process.env.SLACK_CHANNEL_ID as string;
-if (
-  !SLACK_SIGNING_SECRET ||
-  !SLACK_BOT_TOKEN ||
-  !GITHUB_TOKEN ||
-  !SLACK_CHANNEL_ID
-) {
-  console.error("Missing environment variables");
-  process.exit(1);
-}
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
 
-export const app = new App({
-  token: SLACK_BOT_TOKEN,
-  signingSecret: SLACK_SIGNING_SECRET,
+const app = new App({
+  token: process.env.SLACK_BOT_TOKEN,
+  appToken: process.env.SLACK_APP_TOKEN,
+  // signingSecret: process.env.SLACK_SIGNING_SECRET,
+  socketMode: true,
 });
 
-let repos: string[] = JSON.parse(fs.readFileSync("repos.json", "utf8"));
-
-//verify that repo is an array
-if (!Array.isArray(repos)) {
-  console.error("repos.json is not an array");
-  process.exit(1);
-}
-
-//verify that each repo is a string
-if (!repos.every((item) => typeof item === "string")) {
-  console.error("repos.json is not an array of strings");
-  process.exit(1);
-}
-
 (async () => {
-  // Start your app
-  await app.start(process.env.PORT || 3000);
-
-  setInterval(() => checkPulls(repos), 1000 * 30);
-  checkPulls(repos);
+  await app.start();
+  console.log("⚡️ Bolt app started");
 })();
+
+// subscribe to 'app_mention' event in your App config
+// need app_mentions:read and chat:write scopes
+app.event("app_mention", async ({ event, context, client, say }) => {
+  console.log("MENTIONED");
+
+  let botUserId = context.botUserId;
+
+  // get the 10 most recent messages in the channel
+  const history =
+    (
+      await client.conversations.history({
+        channel: event.channel,
+        limit: 10,
+      })
+    ).messages
+      ?.flatMap((m) => (m.text ? ["newMessage_" + m.user + ": " + m.text] : []))
+      .join("\n") +
+    "\nnewMessage" +
+    botUserId +
+    ":";
+
+  const completion = await openai.createCompletion({
+    model: "text-babbage-001",
+    prompt: "" + history,
+    max_tokens: 200,
+    stop: "newMessage",
+  });
+
+  let text = completion.data.choices?.[0].text;
+
+  console.log(history + text);
+  if (text)
+    try {
+      await say({
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: text,
+            },
+          },
+        ],
+      });
+    } catch (error) {
+      console.error(error);
+    }
+});
+
+console.log("READY");
