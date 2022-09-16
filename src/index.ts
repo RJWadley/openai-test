@@ -38,7 +38,7 @@ app.event("app_mention", async ({ event, context, client, say }) => {
     ).messages
       ?.flatMap((m) => (m.text ? ["newMessage_" + m.user + ": " + m.text] : []))
       .join("\n") +
-    "\nnewMessage" +
+    "\ngenerate an insulting message:\nnewMessage" +
     botUserId +
     ":";
 
