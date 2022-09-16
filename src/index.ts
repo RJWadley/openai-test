@@ -21,6 +21,9 @@ const app = new App({
   console.log("⚡️ Bolt app started");
 })();
 
+const randomInt = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min + 1) + min);
+
 // let dateOfLastPing = new Date("1970-01-01T00:00:00.000Z");
 // let lastChannelId = "";
 const sendMessage = async (
@@ -36,7 +39,7 @@ const sendMessage = async (
     (
       await client.conversations.history({
         channel: channelId,
-        limit: 5,
+        limit: randomInt(2, 7),
       })
     ).messages
       ?.flatMap((m) => (m.text ? ["msg_" + m.user + ": " + m.text] : []))
