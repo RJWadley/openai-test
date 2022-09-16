@@ -1,4 +1,4 @@
-import { App } from "@slack/bolt";
+import { AllMiddlewareArgs, App, Context, SayFn } from "@slack/bolt";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -21,40 +21,46 @@ const app = new App({
   console.log("⚡️ Bolt app started");
 })();
 
-// subscribe to 'app_mention' event in your App config
-// need app_mentions:read and chat:write scopes
-app.event("app_mention", async ({ event, context, client, say }) => {
-  console.log("MENTIONED");
-
+// let dateOfLastPing = new Date("1970-01-01T00:00:00.000Z");
+// let lastChannelId = "";
+const sendMessage = async (
+  channelId: string,
+  context: Context,
+  client: AllMiddlewareArgs["client"],
+  say: SayFn
+) => {
   let botUserId = context.botUserId;
 
   // get the 10 most recent messages in the channel
   const history =
     (
       await client.conversations.history({
-        channel: event.channel,
-        limit: 10,
+        channel: channelId,
+        limit: 5,
       })
     ).messages
-      ?.flatMap((m) => (m.text ? ["newMessage_" + m.user + ": " + m.text] : []))
+      ?.flatMap((m) => (m.text ? ["msg_" + m.user + ": " + m.text] : []))
+      .reverse()
       .join("\n") +
-    "\ngenerate a moderately insulting message:\nnewMessage" +
+    "\ngenerate a new moderately insulting message:\nmsg" +
     botUserId +
     ":";
 
   const completion = await openai.createCompletion({
-    model: "text-babbage-001",
+    model: "text-curie-001",
     prompt: "" + history,
-    max_tokens: 200,
-    stop: "newMessage",
+    max_tokens: 250,
+    stop: "msg",
+    temperature: 0.7,
+    top_p: 1,
   });
 
   let text =
     completion.data.choices?.[0].text || "I'm sorry, I don't know what to say.";
 
-  const regex = /<@[0-9A-Za-z]+>/g;
+  const regex = /<[@|+][0-9A-Za-z]+>/g;
   const newText = text.replace(regex, (match) => {
-    if (history.includes(match)) {
+    if (history.includes(match) && match !== "<@" + botUserId + ">") {
       return match;
     } else {
       return "";
@@ -70,7 +76,7 @@ app.event("app_mention", async ({ event, context, client, say }) => {
             type: "section",
             text: {
               type: "mrkdwn",
-              text: text,
+              text: newText,
             },
           },
         ],
@@ -78,6 +84,30 @@ app.event("app_mention", async ({ event, context, client, say }) => {
     } catch (error) {
       console.error(error);
     }
+};
+
+// function randomChance(percent: number) {
+//   return Math.random() < percent / 100;
+// }
+
+// subscribe to 'app_mention' event in your App config
+// need app_mentions:read and chat:write scopes
+app.event("app_mention", async ({ event, context, client, say }) => {
+  sendMessage(event.channel, context, client, say);
+  // dateOfLastPing = new Date();
+  // lastChannelId = event.channel;
 });
 
-console.log("READY");
+// subscribe to 'message' event in your App config
+// app.event("message", async ({ event, context, client, say }) => {
+//   console.log("MESSAGE");
+//   if (
+//     // not from bot
+//     event.channel === lastChannelId &&
+//     randomChance(50) &&
+//     // most recent ping was in the last 2 minutes
+//     new Date().getTime() - dateOfLastPing.getTime() < 2 * 60 * 1000
+//   ) {
+//     sendMessage(event.channel, context, client, say);
+//   }
+// });
