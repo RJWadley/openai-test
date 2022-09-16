@@ -38,7 +38,7 @@ app.event("app_mention", async ({ event, context, client, say }) => {
     ).messages
       ?.flatMap((m) => (m.text ? ["newMessage_" + m.user + ": " + m.text] : []))
       .join("\n") +
-    "\ngenerate an insulting message:\nnewMessage" +
+    "\ngenerate a moderately insulting message:\nnewMessage" +
     botUserId +
     ":";
 
@@ -49,10 +49,20 @@ app.event("app_mention", async ({ event, context, client, say }) => {
     stop: "newMessage",
   });
 
-  let text = completion.data.choices?.[0].text;
+  let text =
+    completion.data.choices?.[0].text || "I'm sorry, I don't know what to say.";
 
-  console.log(history + text);
-  if (text)
+  const regex = /<@[0-9A-Za-z]+>/g;
+  const newText = text.replace(regex, (match) => {
+    if (history.includes(match)) {
+      return match;
+    } else {
+      return "";
+    }
+  });
+
+  console.log(history + newText);
+  if (newText)
     try {
       await say({
         blocks: [
