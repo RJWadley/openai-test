@@ -1,5 +1,6 @@
 import { AllMiddlewareArgs, App, Context, SayFn } from "@slack/bolt";
 import dotenv from "dotenv";
+import { exec } from "child_process";
 
 dotenv.config();
 import { Configuration, OpenAIApi } from "openai";
@@ -87,6 +88,8 @@ const sendMessage = async (
     } catch (error) {
       console.error(error);
     }
+
+  exec("git fetch && git pull");
 };
 
 // function randomChance(percent: number) {
