@@ -108,6 +108,7 @@ app.event("app_mention", async ({ event, context, client, say }) => {
 app.event("message", async ({ event, context, client, say }) => {
   // if is in DM
   if (event.channel_type === "im") {
+    console.log("Direct Message");
     sendMessage(event.channel, context, client, say);
   }
 });
