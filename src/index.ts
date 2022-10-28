@@ -66,8 +66,6 @@ const sendMessage = async (
       .reverse()
       .join("\n") +
     "" +
-    botUserId +
-    "-" +
     "\ngenerate a " +
     mood +
     " response:\nmsg";
