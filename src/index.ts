@@ -111,4 +111,16 @@ app.event("message", async ({ event, context, client, say }) => {
     console.log("Direct Message");
     sendMessage(event.channel, context, client, say);
   }
+
+  // get most recent message in channel
+  let mostRecent = await client.conversations.history({
+    channel: event.channel,
+    limit: 1,
+  });
+
+  // if the message includes the word "lunch", respond
+  if (mostRecent.messages?.[0].text?.includes("lunch")) {
+    console.log("lunch");
+    sendMessage(event.channel, context, client, say);
+  }
 });
