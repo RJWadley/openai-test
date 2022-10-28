@@ -112,15 +112,18 @@ app.event("message", async ({ event, context, client, say }) => {
     sendMessage(event.channel, context, client, say);
   }
 
-  // get most recent message in channel
-  let mostRecent = await client.conversations.history({
-    channel: event.channel,
-    limit: 1,
-  });
+  // if from channel G08ECMHAR
+  if (event.channel === "G08ECMHAR") {
+    // get most recent message in channel
+    let mostRecent = await client.conversations.history({
+      channel: event.channel,
+      limit: 1,
+    });
 
-  // if the message includes the word "lunch", respond
-  if (mostRecent.messages?.[0].text?.includes("lunch")) {
-    console.log("lunch");
-    sendMessage(event.channel, context, client, say);
+    // if the message includes the word "lunch", respond
+    if (mostRecent.messages?.[0].text?.includes("lunch")) {
+      console.log("lunch");
+      sendMessage(event.channel, context, client, say);
+    }
   }
 });
