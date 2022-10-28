@@ -25,6 +25,23 @@ const app = new App({
 const randomInt = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1) + min);
 
+const moods = [
+  "insulting",
+  "horny",
+  "extremely sarcastic",
+  "japanese",
+  "joking",
+  "slutty poem",
+  "profane",
+  "smutty",
+  "proud american",
+  "irratable",
+  "lovesick",
+  "cum joke",
+];
+
+const randomMood = () => moods[randomInt(0, moods.length - 1)];
+
 // let dateOfLastPing = new Date("1970-01-01T00:00:00.000Z");
 // let lastChannelId = "";
 const sendMessage = async (
@@ -34,7 +51,9 @@ const sendMessage = async (
   say: SayFn
 ) => {
   let botUserId = context.botUserId;
+  console.log("sendMessage", botUserId);
 
+  let mood = randomMood();
   // get the 10 most recent messages in the channel
   const prompt =
     (
@@ -46,7 +65,9 @@ const sendMessage = async (
       ?.flatMap((m) => (m.text ? ["msg_" + m.user + "- " + m.text] : []))
       .reverse()
       .join("\n") +
-    "\ngenerate an insulting response:\nmsg" +
+    "\ngenerate a " +
+    mood +
+    " response:\nmsg" +
     botUserId +
     "-";
 
