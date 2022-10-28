@@ -62,15 +62,14 @@ const sendMessage = async (
         limit: randomInt(2, 7),
       })
     ).messages
-      ?.flatMap((m) => (m.text ? ["msg_" + m.user + "- " + m.text] : []))
+      ?.flatMap((m) => (m.text ? ["msg-" + m.user + "" + m.text] : []))
       .reverse()
       .join("\n") +
-    "" +
+    "\nmsg-" +
     botUserId +
-    "-" +
     "\ngenerate a " +
     mood +
-    " response:\nmsg";
+    " response:";
 
   const completion = await openai.createCompletion({
     model: "text-curie-001",
