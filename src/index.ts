@@ -105,6 +105,7 @@ const sendMessage = async (
             },
           },
         ],
+        text: newText,
       });
     } catch (error) {
       console.error(error);
@@ -142,7 +143,7 @@ app.event("message", async ({ event, context, client, say }) => {
     });
 
     // if the message includes the word "lunch", respond
-    if (mostRecent.messages?.[0].text?.includes("lunch")) {
+    if (mostRecent.messages?.[0].text?.toLowerCase().includes("lunch")) {
       console.log("lunch");
       sendMessage(event.channel, context, client, say);
     }
