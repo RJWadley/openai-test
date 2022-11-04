@@ -33,11 +33,12 @@ const moods = [
   "joking",
   "slutty poem",
   "profane",
-  "smutty",
+  "hostile",
   "proud american",
   "irratable",
   "lovesick",
   "cum joke",
+  "pissed off"
 ];
 
 const randomMood = () => moods[randomInt(0, moods.length - 1)];
