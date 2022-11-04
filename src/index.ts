@@ -35,7 +35,7 @@ const moods = [
   "profane",
   "hostile",
   "proud american",
-  "irratable",
+  "irritable",
   "lovesick",
   "cum joke",
   "pissed off"
