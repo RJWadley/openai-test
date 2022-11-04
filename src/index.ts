@@ -43,7 +43,8 @@ const moods = [
   "insulting poem",
   "angry poem",
   "trump loving",
-  "big truck loving"
+  "big truck loving",
+  "your mom"
 ];
 
 const randomMood = () => moods[randomInt(0, moods.length - 1)];
