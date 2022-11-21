@@ -44,7 +44,7 @@ const moods = [
   "angry poem",
   "trump loving",
   "big truck loving",
-  "your mom"
+  "your mom",
 ];
 
 const randomMood = () => moods[randomInt(0, moods.length - 1)];
@@ -114,6 +114,7 @@ const sendMessage = async (
         ],
         text: newText,
       });
+      exec("say " + newText);
     } catch (error) {
       console.error(error);
     }
