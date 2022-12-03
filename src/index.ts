@@ -78,7 +78,7 @@ const sendMessage = async (
     " response:";
 
   const completion = await openai.createCompletion({
-    model: "text-davinci-003",
+    model: "text-curie-001",
     prompt: prompt,
     max_tokens: 250,
     stop: "msg",
