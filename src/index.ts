@@ -5,6 +5,8 @@ import { exec } from "child_process";
 dotenv.config();
 import { Configuration, OpenAIApi } from "openai";
 
+const safeChannelID = "C08ECMHAR";
+
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -142,8 +144,8 @@ app.event("message", async ({ event, context, client, say }) => {
     sendMessage(event.channel, context, client, say);
   }
 
-  // if from channel G08ECMHAR
-  if (event.channel === "G08ECMHAR") {
+  // if from safe channel
+  if (event.channel === safeChannelID) {
     // get most recent message in channel
     let mostRecent = await client.conversations.history({
       channel: event.channel,
