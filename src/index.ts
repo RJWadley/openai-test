@@ -31,7 +31,6 @@ const moods = [
   "insulting",
   "horny",
   "extremely sarcastic",
-  "french",
   "joking",
   "slutty poem",
   "profane",
