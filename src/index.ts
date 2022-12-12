@@ -5,7 +5,20 @@ import { exec } from "child_process";
 dotenv.config();
 import { Configuration, OpenAIApi } from "openai";
 
-const safeChannelID = "C08ECMHAR";
+const safeChannelIDs = [
+  // main reform channel
+  "C08ECMHAR",
+  // dev qa
+  "C020FURDYL8",
+  // devs
+  "C01T0PC528P",
+  // design reviews
+  "C02KC6BSD",
+  // dev design reviews
+  "C040S2U1Y1X",
+  // development reviews
+  "C0154EHBL3W",
+];
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -144,16 +157,20 @@ app.event("message", async ({ event, context, client, say }) => {
   }
 
   // if from safe channel
-  console.log("event" + event?.channel);
-  if (event.channel === safeChannelID) {
+  console.log("event" + event.channel);
+  if (safeChannelIDs.includes(event.channel)) {
     // get most recent message in channel
     let mostRecent = await client.conversations.history({
       channel: event.channel,
       limit: 1,
     });
 
-    // if the message includes the word "lunch", respond
-    if (mostRecent.messages?.[0].text?.toLowerCase().includes("lunch")) {
+    if (
+      // if the message includes the word "lunch", respond
+      mostRecent.messages?.[0].text?.toLowerCase().includes("lunch") ||
+      // or a 10% chance
+      Math.random() < 0.1
+    ) {
       console.log("lunch");
       sendMessage(event.channel, context, client, say);
     }
