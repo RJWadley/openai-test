@@ -17,7 +17,7 @@ const safeChannelIDs = [
   // dev design reviews
   "C040S2U1Y1X",
   // development reviews
-  "C0154EHBL3W",
+  // "C0154EHBL3W",
 ];
 
 const configuration = new Configuration({
