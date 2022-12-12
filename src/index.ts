@@ -144,6 +144,7 @@ app.event("message", async ({ event, context, client, say }) => {
   }
 
   // if from safe channel
+  console.log("event" + event?.channel);
   if (event.channel === safeChannelID) {
     // get most recent message in channel
     let mostRecent = await client.conversations.history({
