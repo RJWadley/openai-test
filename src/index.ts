@@ -58,6 +58,7 @@ const moods = [
   "trump loving",
   "big truck loving",
   "your mom",
+  "furry cat",
 ];
 
 const randomMood = () => moods[randomInt(0, moods.length - 1)];
