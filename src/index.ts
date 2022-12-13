@@ -169,8 +169,8 @@ app.event("message", async ({ event, context, client, say }) => {
     if (
       // if the message includes the word "lunch", respond
       mostRecent.messages?.[0].text?.toLowerCase().includes("lunch") ||
-      // or a 5% chance
-      Math.random() < 0.05
+      // or a 1% chance
+      Math.random() < 0.01
     ) {
       console.log("lunch");
       sendMessage(event.channel, context, client, say);
