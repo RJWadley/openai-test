@@ -51,7 +51,7 @@ const moods = [
   "proud american",
   "irritable",
   "lovesick",
-  "cum joke",
+  // "cum joke",
   "pissed off",
   "insulting poem",
   "angry poem",
