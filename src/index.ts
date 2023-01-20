@@ -104,17 +104,17 @@ const sendMessage = async (
 
   let text =
     completion.data.choices?.[0].text || "I'm sorry, I don't know what to say.";
-  text = text.replace(/^("|')([\s\S]+)("|')$/, "$2");
-  text = text.replace(/^("|')([\s\S]+)("|')$/, "$2");
 
   const regex = /<?[@|+_-][0-9A-Za-z]+[+-]>?/g;
-  const newText = text.replace(regex, (match) => {
-    if (prompt.includes(match) && match !== "<@" + botUserId + ">") {
-      return match;
-    } else {
-      return "";
-    }
-  });
+  const newText = text
+    .replace(regex, (match) => {
+      if (prompt.includes(match) && match !== "<@" + botUserId + ">") {
+        return match;
+      } else {
+        return "";
+      }
+    })
+    .replace(/^("|')([\s\S]+)("|')$/, "$2");
 
   console.log(prompt + newText);
   if (newText)
