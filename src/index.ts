@@ -80,7 +80,7 @@ const sendMessage = async (
     (
       await client.conversations.history({
         channel: channelId,
-        limit: randomInt(2, 7),
+        limit: 10,
       })
     ).messages
       ?.flatMap((m) => (m.text ? ["msg-" + m.user + "" + m.text] : []))
@@ -169,7 +169,7 @@ app.event("message", async ({ event, context, client, say }) => {
     if (
       // if the message includes the word "lunch", respond
       mostRecent.messages?.[0].text?.toLowerCase().includes("lunch") ||
-      // or a 1% chance
+      // or a 0% chance
       Math.random() < 0
     ) {
       console.log("lunch");
