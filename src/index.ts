@@ -105,8 +105,10 @@ const sendMessage = async (
   let text =
     completion.data.choices?.[0].text || "I'm sorry, I don't know what to say.";
 
+  const noQuotes = text.replaceAll(/"|'/g, "");
+
   const regex = /<?[@|+_-][0-9A-Za-z]+[+-]>?/g;
-  const newText = text.replace(regex, (match) => {
+  const newText = noQuotes.replace(regex, (match) => {
     if (prompt.includes(match) && match !== "<@" + botUserId + ">") {
       return match;
     } else {
@@ -123,7 +125,7 @@ const sendMessage = async (
             type: "section",
             text: {
               type: "mrkdwn",
-              text: newText.replace(/^("|')([\s\S]+)("|')$/, "$2"),
+              text: newText,
             },
           },
         ],

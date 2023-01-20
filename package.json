@@ -10,18 +10,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@octokit/rest": "^18.12.0",
-    "@octokit/types": "^6.41.0",
-    "@slack/bolt": "^3.11.1",
-    "@types/node-localstorage": "^1.3.0",
-    "dotenv": "^16.0.1",
-    "express": "^4.18.1",
-    "node-localstorage": "^2.2.1",
-    "nodemon": "^2.0.19",
-    "openai": "^3.0.0",
-    "typescript": "^4.7.4"
+    "@octokit/rest": "^19.0.5",
+    "@octokit/types": "^9.0.0",
+    "@slack/bolt": "^3.12.2",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20",
+    "openai": "^3.1.0",
+    "typescript": "^4.9.4"
   },
   "devDependencies": {
-    "@tsconfig/recommended": "^1.0.1"
+    "@tsconfig/recommended": "^1.0.2"
   }
 }
