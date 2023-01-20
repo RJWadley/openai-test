@@ -56,6 +56,7 @@ const moods = [
   "insulting poem",
   "angry poem",
   "trump loving",
+  "biden loving",
   "big truck loving",
   "your mom",
   "furry cat",
