@@ -89,9 +89,9 @@ const sendMessage = async (
       .join("\n") +
     "\nmsg-" +
     botUserId +
-    "\ngenerate a " +
+    "\ngenerate a response from a " +
     mood +
-    " response:";
+    " person:";
 
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
