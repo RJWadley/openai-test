@@ -105,6 +105,7 @@ const sendMessage = async (
   let text =
     completion.data.choices?.[0].text || "I'm sorry, I don't know what to say.";
   text = text.replace(/^("|')([\s\S]+)("|')$/, "$2");
+  text = text.replace(/^("|')([\s\S]+)("|')$/, "$2");
 
   const regex = /<?[@|+_-][0-9A-Za-z]+[+-]>?/g;
   const newText = text.replace(regex, (match) => {
