@@ -86,12 +86,6 @@ const isUserID = (text: string | undefined): text is keyof typeof USER_IDS => {
 };
 
 /**
- * generate a random number
- */
-const randomInt = (min: number, max: number) =>
-  Math.floor(Math.random() * (max - min + 1) + min);
-
-/**
  * get a random mood, changing every 10 minutes
  * @returns the mood
  */
@@ -105,6 +99,7 @@ const getRandomMood = () => {
 console.log("starting mood is", getRandomMood());
 
 let tries = 0;
+let timeOfLastMessage = 0;
 
 /**
  * generate and send a message to the specified channel
@@ -118,7 +113,8 @@ const sendMessage = async (
   channelId: string,
   context: Context,
   client: AllMiddlewareArgs["client"],
-  say: SayFn
+  say: SayFn,
+  allowSkip: boolean = false
 ): Promise<void> => {
   let botUserId = context.botUserId;
   let mood = getRandomMood();
@@ -173,6 +169,16 @@ const sendMessage = async (
   ];
 
   /**
+   * tweak prompt to allow skipping
+   */
+  if (allowSkip) {
+    prompt.push({
+      role: "system",
+      content: `If you don't need to respond, type "skip"`,
+    });
+  }
+
+  /**
    * generate a response
    */
   const completion = await openai.createChatCompletion({
@@ -190,7 +196,15 @@ const sendMessage = async (
     console.log("Not using response:", responseText);
     console.log("response contained a banned word, trying again");
     tries += 1;
-    return sendMessage(channelId, context, client, say);
+    return sendMessage(channelId, context, client, say, allowSkip);
+  }
+
+  /**
+   * check for a skip
+   */
+  if (responseText.length < 10 && responseText.includes("skip")) {
+    console.log("Skipping message");
+    return;
   }
 
   /**
@@ -216,6 +230,7 @@ const sendMessage = async (
   }
 
   tries = 0;
+  timeOfLastMessage = Date.now();
 
   /**
    * keep the bot up to date
@@ -239,6 +254,7 @@ app.event("message", async ({ event, context, client, say }) => {
   if (event.channel_type === "im") {
     console.log("Direct Message");
     sendMessage(event.channel, context, client, say);
+    return;
   }
 
   // if from safe channel
@@ -255,8 +271,22 @@ app.event("message", async ({ event, context, client, say }) => {
         mostRecent.messages?.[0].text?.toLowerCase().includes(word)
       )
     ) {
-      console.log("lunch");
+      console.log("Responding to hot word");
       sendMessage(event.channel, context, client, say);
+      return;
+    }
+
+    // if the last message was from more than x seconds ago AND less than y seconds ago, respond
+    const minSeconds = 30;
+    const maxSeconds = 90;
+    if (
+      timeOfLastMessage > 0 &&
+      Date.now() - timeOfLastMessage > minSeconds * 1000 &&
+      Date.now() - timeOfLastMessage < maxSeconds * 1000
+    ) {
+      console.log("Responding to other message");
+      sendMessage(event.channel, context, client, say);
+      return;
     }
   }
 });
