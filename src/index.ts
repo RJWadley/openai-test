@@ -117,6 +117,7 @@ const sendMessage = async (
   allowSkip: boolean = false
 ): Promise<void> => {
   let botUserId = context.botUserId;
+  if (botUserId) return;
   let mood = getRandomMood();
   const includesBannedWord = (text: string) =>
     BANNED_WORDS.some(
