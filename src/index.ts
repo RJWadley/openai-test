@@ -6,7 +6,7 @@ import USER_IDS from "./users.json";
 
 dotenv.config();
 
-const CONTINUE_CONVERSATIONS: boolean = true;
+const CONTINUE_CONVERSATIONS: boolean = false;
 
 const SAFE_CHANNEL_IDS = [
   // main reform channel
@@ -186,7 +186,8 @@ const sendMessage = async (
   if (tries > 2) {
     prompt.push({
       role: "system",
-      content: "Keep your response below 100 characters",
+      content:
+        "Keep your response below 100 characters. You may change the subject if you cannot create a response.",
     });
   }
 
@@ -196,7 +197,7 @@ const sendMessage = async (
   const completion = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: prompt,
-    temperature: 1 + tries * 0.2,
+    temperature: 1 + tries * 0.1,
   });
 
   let responseText =
