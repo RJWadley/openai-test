@@ -183,6 +183,13 @@ const sendMessage = async (
     });
   }
 
+  if (tries > 2) {
+    prompt.push({
+      role: "system",
+      content: "Keep your response below 100 characters",
+    });
+  }
+
   /**
    * generate a response
    */
