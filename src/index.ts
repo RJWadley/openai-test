@@ -28,9 +28,9 @@ const MOODS = [
   "horny",
   "extremely sarcastic",
   "joking",
-  "slutty poem",
+  // "slutty poem",
   "profane",
-  "proud american",
+  // "proud american",
   "lovesick",
   // "cum joke",
   "pissed off",
@@ -92,11 +92,12 @@ const randomInt = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1) + min);
 
 /**
- * get a random mood, changing every five minutes
+ * get a random mood, changing every n minutes
  * @returns the mood
  */
 const getRandomMood = () => {
-  const changeEvery = 5 * 60 * 1000;
+  const numMinutes = 10;
+  const changeEvery = numMinutes * 60 * 1000;
   const currentTime = Date.now();
   const moodVariable = Math.round(currentTime / changeEvery);
   const moodIndex = moodVariable % MOODS.length;
