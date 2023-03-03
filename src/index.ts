@@ -203,6 +203,12 @@ const sendMessage = async (
     completion.data.choices[0].message?.content ??
     "I can't think of anything to say right now...";
 
+  responseText = responseText
+    .replaceAll(`As a ${mood} robot, `, "")
+    .replaceAll(`as a ${mood} robot, `, "")
+    .replaceAll(`As an ${mood} robot, `, "")
+    .replaceAll(`as an ${mood} robot, `, "");
+
   // check if we have a banned word in the response
   if (includesBannedWord(responseText) && tries < 5) {
     console.log("Not using response:", responseText);
