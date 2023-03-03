@@ -23,23 +23,23 @@ const SAFE_CHANNEL_IDS = [
 
 const HOTWORDS = ["lunch", "evil"];
 
+// "slutty poem",
+// "proud american",
+// "cum joke",
+// "angry poem",
+// "trump loving",
+// "biden loving",
+// "your mom",
 const MOODS = [
   "insulting",
   "horny",
   "extremely sarcastic",
   "joking",
-  // "slutty poem",
   "profane",
-  // "proud american",
   "lovesick",
-  // "cum joke",
   "pissed off",
   "insulting poem",
-  // "angry poem",
-  // "trump loving",
-  // "biden loving",
   "big truck loving",
-  // "your mom",
   "furry cat",
 ]
   // randomize the order
@@ -92,16 +92,14 @@ const randomInt = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1) + min);
 
 /**
- * get a random mood, changing every n minutes
+ * get a random mood, changing every 10 minutes
  * @returns the mood
  */
 const getRandomMood = () => {
   const numMinutes = 10;
-  const changeEvery = numMinutes * 60 * 1000;
-  const currentTime = Date.now();
-  const moodVariable = Math.round(currentTime / changeEvery);
-  const moodIndex = moodVariable % MOODS.length;
-  return MOODS[moodIndex];
+  const numMoods = MOODS.length;
+  const index = Math.floor((Date.now() / 1000 / 60 / numMinutes) % numMoods);
+  return MOODS[index];
 };
 
 console.log("starting mood is", getRandomMood());
@@ -180,6 +178,7 @@ const sendMessage = async (
   const completion = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: prompt,
+    temperature: 1 + tries * 0.2,
   });
 
   let responseText =
@@ -188,6 +187,7 @@ const sendMessage = async (
 
   // check if we have a banned word in the response
   if (includesBannedWord(responseText) && tries < 5) {
+    console.log("Not using response:", responseText);
     console.log("response contained a banned word, trying again");
     tries += 1;
     return sendMessage(channelId, context, client, say);
