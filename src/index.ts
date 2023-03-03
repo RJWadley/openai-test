@@ -6,6 +6,8 @@ import USER_IDS from "./users.json";
 
 dotenv.config();
 
+const CONTINUE_CONVERSATIONS: boolean = true;
+
 const SAFE_CHANNEL_IDS = [
   // main reform channel
   "C08ECMHAR",
@@ -19,6 +21,8 @@ const SAFE_CHANNEL_IDS = [
   "C040S2U1Y1X",
   // development reviews
   "C0154EHBL3W",
+  // test channel
+  "C04S98U9PAQ",
 ];
 
 const HOTWORDS = ["lunch", "evil"];
@@ -100,6 +104,7 @@ console.log("starting mood is", getRandomMood());
 
 let tries = 0;
 let timeOfLastMessage = 0;
+let lastActiveChannel: string | undefined = undefined;
 
 /**
  * generate and send a message to the specified channel
@@ -117,7 +122,6 @@ const sendMessage = async (
   allowSkip: boolean = false
 ): Promise<void> => {
   let botUserId = context.botUserId;
-  if (botUserId) return;
   let mood = getRandomMood();
   const includesBannedWord = (text: string) =>
     BANNED_WORDS.some(
@@ -226,12 +230,13 @@ const sendMessage = async (
     });
     console.log("Message sent successfully!");
     console.log(responseText);
+    timeOfLastMessage = Date.now();
+    lastActiveChannel = channelId;
   } catch (error) {
     console.error(error);
   }
 
   tries = 0;
-  timeOfLastMessage = Date.now();
 
   /**
    * keep the bot up to date
@@ -251,6 +256,8 @@ app.event("app_mention", async ({ event, context, client, say }) => {
  * and also DMs
  */
 app.event("message", async ({ event, context, client, say }) => {
+  console.log("EVENT!");
+
   // if in DM, always respond
   if (event.channel_type === "im") {
     console.log("Direct Message");
@@ -265,6 +272,16 @@ app.event("message", async ({ event, context, client, say }) => {
       channel: event.channel,
       limit: 1,
     });
+    console.log("text", mostRecent.messages?.[0].text);
+
+    // if the message is from a bot or pings us, ignore it
+    if (mostRecent.messages?.[0].bot_id) {
+      console.log("Ignoring bot message");
+      return;
+    }
+    if (mostRecent.messages?.[0].text?.includes("<@U042LLR0XJS>")) {
+      return;
+    }
 
     // if the message includes a hot word, respond
     if (
@@ -277,17 +294,40 @@ app.event("message", async ({ event, context, client, say }) => {
       return;
     }
 
-    // if the last message was from more than x seconds ago AND less than y seconds ago, respond
+    /**
+     * Continue conversations when it makes sense
+     */
+    if (!CONTINUE_CONVERSATIONS) return;
+    // if the message is not from the active channel, stop here
+    if (event.channel !== lastActiveChannel) {
+      console.log(
+        "Message not from active channel,",
+        event.channel,
+        lastActiveChannel
+      );
+      return;
+    }
+
+    // if this message was from more than x seconds ago AND less than y seconds ago, respond
     const minSeconds = 30;
     const maxSeconds = 90;
+    const messageTs = mostRecent.messages?.[0].ts;
+    if (!messageTs) return;
+    const messageAsNumber = parseFloat(messageTs) * 1000;
+
     if (
       timeOfLastMessage > 0 &&
-      Date.now() - timeOfLastMessage > minSeconds * 1000 &&
-      Date.now() - timeOfLastMessage < maxSeconds * 1000
+      messageAsNumber - timeOfLastMessage > minSeconds * 1000 &&
+      messageAsNumber - timeOfLastMessage < maxSeconds * 1000
     ) {
       console.log("Responding to other message");
       sendMessage(event.channel, context, client, say);
       return;
+    } else {
+      console.log("Message out of range");
+      return;
     }
   }
+
+  console.log("Event finished with noop");
 });
