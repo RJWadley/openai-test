@@ -183,7 +183,7 @@ const sendMessage = async (
     });
   }
 
-  if (tries > 2) {
+  if (tries > 3) {
     prompt.push({
       role: "system",
       content:
@@ -216,7 +216,7 @@ const sendMessage = async (
     );
 
   // check if we have a banned word in the response
-  if (includesBannedWord(responseText) && tries < 5) {
+  if (includesBannedWord(responseText) && tries < 10) {
     console.log("Not using response:", responseText);
     console.log("response contained a banned word, trying again");
     tries += 1;
