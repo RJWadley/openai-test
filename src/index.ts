@@ -208,12 +208,13 @@ const sendMessage = async (
     .replaceAll(`As a ${mood} robot, `, "")
     .replaceAll(`as a ${mood} robot, `, "")
     .replaceAll(`As an ${mood} robot, `, "")
-    .replaceAll(`as an ${mood} robot, `, "")
-    .replaceAll(
-      // replace pings
-      /@([A-Z0-9]+)/g,
-      "<@$1>"
-    );
+    .replaceAll(`as an ${mood} robot, `, "");
+
+  Object.keys(USER_IDS).forEach((id) => {
+    if (responseText.includes(` @${id} `)) {
+      responseText = responseText.replaceAll(` @${id} `, ` <@${id}> `);
+    }
+  });
 
   // check if we have a banned word in the response
   if (includesBannedWord(responseText) && tries < 10) {
