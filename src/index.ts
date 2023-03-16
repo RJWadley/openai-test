@@ -307,7 +307,9 @@ app.event("message", async ({ event, context, client, say }) => {
     if (
       HOTWORDS.some((word) =>
         mostRecent.messages?.[0].text?.toLowerCase().includes(word)
-      )
+      ) && 
+      // 25% chance of responding
+      Math.random() < 0.25
     ) {
       console.log("Responding to hot word");
       sendMessage(event.channel, context, client, say);
