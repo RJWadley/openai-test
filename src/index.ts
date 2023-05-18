@@ -6,7 +6,7 @@ import USER_IDS from "./users.json";
 
 dotenv.config();
 
-const CONTINUE_CONVERSATIONS: boolean = false;
+const CONTINUE_CONVERSATIONS: boolean = true;
 
 const SAFE_CHANNEL_IDS = [
   // main reform channel
@@ -179,7 +179,7 @@ const sendMessage = async (
   if (allowSkip) {
     prompt.push({
       role: "system",
-      content: `If you don't need to respond, type "skip"`,
+      content: `If the chat is not about you or your comments, say nothing by saying "skip".`,
     });
   }
 
@@ -187,7 +187,7 @@ const sendMessage = async (
     prompt.push({
       role: "system",
       content:
-        "Keep your response below 100 characters. You may change the subject if you cannot create a response.",
+        "Keep your response below 100 characters. You may also change the subject.",
     });
   }
 
@@ -308,8 +308,8 @@ app.event("message", async ({ event, context, client, say }) => {
       HOTWORDS.some((word) =>
         mostRecent.messages?.[0].text?.toLowerCase().includes(word)
       ) && 
-      // 25% chance of responding
-      Math.random() < 0.25
+      // 10% chance of responding
+      Math.random() < 0.1
     ) {
       console.log("Responding to hot word");
       sendMessage(event.channel, context, client, say);
